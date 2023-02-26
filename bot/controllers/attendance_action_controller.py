@@ -6,11 +6,11 @@ from loguru import logger
 from mmpy_bot import Plugin, Message
 
 import config
-import messages
-from db_controller import DBController, AssistanceEvent
+from assets import messages
+from db.controller import DataBaseController, AssistanceEvent
 
 
-class ActionController:
+class AttendanceActionController:
     @classmethod
     def on_start(cls, plugin: Plugin) -> None:
         cls.broadcast_message_to_admins(plugin, messages.BOT_START_MESSAGE)
@@ -44,7 +44,7 @@ class ActionController:
         if week_day == 5 or week_day == 6:
             logger.info('It is weekend, skipping broadcast...')
             return
-        with DBController() as db:
+        with DataBaseController() as db:
             people = db.get_promptable_people()
         for person in people:
             personalized_message = message.format(username=person.username)
@@ -52,7 +52,7 @@ class ActionController:
 
     @staticmethod
     def broadcast_message_to_admins(plugin: Plugin, message: str) -> None:
-        with DBController() as db:
+        with DataBaseController() as db:
             people = db.get_admins()
         for person in people:
             personalized_message = message.format(username=person.username)
@@ -68,7 +68,7 @@ class ActionController:
         message_to_broadcast = messages_mapping.get(check_type)
         if message_to_broadcast is None:
             return messages.INVALID_ACTION
-        with DBController() as db:
+        with DataBaseController() as db:
             person = db.get_person(message.sender_name)
             if person is None or not person.is_admin:
                 return messages.NO_PERMISSION
@@ -77,7 +77,7 @@ class ActionController:
 
     @staticmethod
     async def get_help(message: Message) -> str:
-        with DBController() as db:
+        with DataBaseController() as db:
             person = db.get_person(message.sender_name)
             admin_part = ''
             if person is not None and person.is_admin:
@@ -89,7 +89,7 @@ class ActionController:
     async def add_user(message: Message) -> str:
         username = message.sender_name
         channel_id = message.channel_id
-        with DBController() as db:
+        with DataBaseController() as db:
             created, person = db.get_or_create_person(username, channel_id, False)
         if created:
             return messages.CREATED_USER.format(channel_id=channel_id)
@@ -100,7 +100,7 @@ class ActionController:
         if username == 'me':
             username = message.sender_name
 
-        with DBController() as db:
+        with DataBaseController() as db:
             if username != message.sender_name:
                 person = db.get_person(message.sender_name)
                 if person is None or not person.is_admin:
@@ -112,7 +112,7 @@ class ActionController:
 
     @staticmethod
     async def add_admin(message: Message, username: str) -> str:
-        with DBController() as db:
+        with DataBaseController() as db:
             person = db.get_person(message.sender_name)
             if person is None or not person.is_admin:
                 return messages.NO_PERMISSION
@@ -125,7 +125,7 @@ class ActionController:
     @staticmethod
     async def prompt_user(message: Message, wants_prompts: bool) -> str:
         username = message.sender_name
-        with DBController() as db:
+        with DataBaseController() as db:
             person = db.get_person(username)
             if person is None:
                 return messages.DONT_HAVE_USER
@@ -152,7 +152,7 @@ class ActionController:
     @staticmethod
     async def _perform_in_office_action(message: Message, delete: bool, day: date) -> str:
         username = message.sender_name
-        with DBController() as db:
+        with DataBaseController() as db:
             person = db.get_person(username)
             if person is None:
                 return messages.DONT_HAVE_USER
@@ -166,7 +166,7 @@ class ActionController:
     @staticmethod
     async def _perform_update_event_action(message: Message, delete: bool, event: AssistanceEvent, day: date) -> str:
         username = message.sender_name
-        with DBController() as db:
+        with DataBaseController() as db:
             person = db.get_person(username)
             if person is None:
                 return messages.DONT_HAVE_USER
@@ -194,7 +194,7 @@ class ActionController:
 
     @staticmethod
     async def _get_list_of_people_in_office(day: date) -> str:
-        with DBController() as db:
+        with DataBaseController() as db:
             assistants = db.get_assistants_for_date(day)
         if not assistants:
             return messages.NO_ONE.format(action='is in the office', date=day)
@@ -203,7 +203,7 @@ class ActionController:
 
     @staticmethod
     async def _get_list_of_people_with_event(event: AssistanceEvent, day: date) -> str:
-        with DBController() as db:
+        with DataBaseController() as db:
             assistants = db.get_assistants_for_event(day, event)
         event_pretty = event.value.replace('_', ' ')
         if not assistants:

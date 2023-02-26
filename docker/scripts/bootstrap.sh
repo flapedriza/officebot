@@ -2,6 +2,6 @@
 
 set -ue
 
-python db.py
+python initialize_db.py
 
 python bot.py

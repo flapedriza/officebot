@@ -5,12 +5,12 @@ from typing import Optional
 from mmpy_bot import Plugin, listen_to, Message
 
 import config
-from action_controller import ActionController
+from controllers import AttendanceActionController
 
 
-class OfficeBotPlugin(Plugin):
+class OfficeAttendancePlugin(Plugin):
     def __init__(self) -> None:
-        self.action_controller = ActionController()
+        self.action_controller = AttendanceActionController()
         super().__init__()
 
     def on_start(self) -> None:

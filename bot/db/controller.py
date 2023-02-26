@@ -6,8 +6,8 @@ from loguru import logger
 from sqlalchemy.exc import NoResultFound
 from sqlmodel import Session, select
 
-import models
-from db import engine
+from db import models
+from db.engine import engine
 
 
 class AssistanceEvent(enum.Enum):
@@ -16,8 +16,8 @@ class AssistanceEvent(enum.Enum):
     IN_FOR_BEERS = "in_for_beers"
 
 
-class DBController:
-    def __enter__(self) -> "DBController":
+class DataBaseController:
+    def __enter__(self) -> "DataBaseController":
         self.session = Session(engine)
         return self
 

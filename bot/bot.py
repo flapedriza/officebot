@@ -1,7 +1,7 @@
 from mmpy_bot import Bot, Settings
 
 import config
-from plugin import OfficeBotPlugin
+from plugins import OfficeAttendancePlugin
 
 bot = Bot(
     settings=Settings(
@@ -11,7 +11,7 @@ bot = Bot(
         BOT_TOKEN=config.BOT_TOKEN,
         BOT_TEAM=config.BOT_TEAM,
     ),
-    plugins=[OfficeBotPlugin()]
+    plugins=[OfficeAttendancePlugin()]
 )
 
 bot.run()
