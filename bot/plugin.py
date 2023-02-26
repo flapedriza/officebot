@@ -74,13 +74,13 @@ class OfficeBotPlugin(Plugin):
         response = await self.action_controller.perform_date_action(message, delete, action, action_date_object)
         self.driver.reply_to(message, response)
 
-    @listen_to(r'^Who ([a-z ]+) today$', re.IGNORECASE, needs_mention=True)
+    @listen_to(r'^Who ([a-z ]+) today\??$', re.IGNORECASE, needs_mention=True)
     async def list_people_action(self, message: Message, action: str) -> None:
         response = await self.action_controller.get_list_of_people_for_action(action)
         self.driver.create_post(message.channel_id, response)
 
     @listen_to(
-        r'^Who will ([a-z ]+) on ([0-9]{2}\/[0-9]{2}\/[0-9]{4})$',
+        r'^Who will ([a-z ]+) on ([0-9]{2}\/[0-9]{2}\/[0-9]{4})\??$',
         re.IGNORECASE,
         needs_mention=True
     )
