@@ -23,29 +23,41 @@ class AttendanceActionController:
     def schedule_checks(cls, plugin: Plugin) -> None:
         logger.info('Scheduling checks...')
         schedule.every().day.at(config.ATTENDANCE_CHECK_TIME).do(
-            cls.broadcast_message_to_promptable_people,
+            cls.trigger_check,
             plugin,
-            messages.OFFICE_ATTENDANCE_CHECK
+            None,
+            'attendance',
+            True
         )
         schedule.every().day.at(config.LUNCH_CHECK_TIME).do(
-            cls.broadcast_message_to_promptable_people,
+            cls.trigger_check,
             plugin,
-            messages.LUNCH_CHECK
+            None,
+            'lunch',
+            True
         )
         schedule.every().day.at(config.BEERS_CHECK_TIME).do(
-            cls.broadcast_message_to_promptable_people,
+            cls.trigger_check,
             plugin,
-            messages.BEERS_CHECK
+            None,
+            'beers',
+            True
         )
 
     @staticmethod
-    def broadcast_message_to_promptable_people(plugin: Plugin, message: str) -> None:
-        week_day = date.today().weekday()
-        if week_day == 5 or week_day == 6:
-            logger.info('It is weekend, skipping broadcast...')
-            return
+    def broadcast_message_to_promptable_people(
+        plugin: Plugin,
+        message: str,
+        only_attending_today: bool,
+        skip_attending_today: bool,
+        skip_event: Optional[AssistanceEvent],
+    ) -> None:
         with DataBaseController() as db:
-            people = db.get_promptable_people()
+            people = db.get_promptable_people(
+                only_attending_today=only_attending_today,
+                skip_attending_today=skip_attending_today,
+                skip_event=skip_event
+            )
         for person in people:
             personalized_message = message.format(username=person.username)
             plugin.driver.create_post(person.channel_id, personalized_message)
@@ -59,31 +71,65 @@ class AttendanceActionController:
             plugin.driver.create_post(person.channel_id, personalized_message)
 
     @classmethod
-    async def trigger_check(cls, plugin: Plugin, message: Message, check_type: str) -> str:
+    def trigger_check(
+        cls,
+        plugin: Plugin,
+        message: Optional[Message],
+        check_type: str,
+        skip_admin_check: bool = False
+    ) -> str:
+        week_day = date.today().weekday()
+        if week_day in config.BROADCASTS_NOT_ALLOWED_DAYS:
+            logger.info('No broadcasts allowed today, skipping broadcast...')
+            return messages.NO_BROADCASTS_TODAY
         messages_mapping = {
-            'attendance': messages.OFFICE_ATTENDANCE_CHECK,
-            'lunch': messages.LUNCH_CHECK,
-            'beers': messages.BEERS_CHECK
+            'attendance': {
+                'message': messages.OFFICE_ATTENDANCE_CHECK,
+                'only_attending_today': False,
+                'skip_attending_today': True,
+                'skip_event': None
+            },
+            'lunch': {
+                'message': messages.LUNCH_CHECK,
+                'only_attending_today': True,
+                'skip_attending_today': False,
+                'skip_event': AssistanceEvent.LUNCH_OUTSIDE
+            },
+            'beers': {
+                'message': messages.BEERS_CHECK,
+                'only_attending_today': True,
+                'skip_attending_today': False,
+                'skip_event': AssistanceEvent.IN_FOR_BEERS
+            },
         }
-        message_to_broadcast = messages_mapping.get(check_type)
-        if message_to_broadcast is None:
+        message_settings = messages_mapping.get(check_type)
+        if message_settings is None:
             return messages.INVALID_ACTION
-        with DataBaseController() as db:
-            person = db.get_person(message.sender_name)
-            if person is None or not person.is_admin:
+        if not skip_admin_check:
+            if message is None:
+                logger.info('No message provided, skipping...')
                 return messages.NO_PERMISSION
-        cls.broadcast_message_to_promptable_people(plugin, message_to_broadcast)
+            with DataBaseController() as db:
+                person = db.get_person(message.sender_name)
+                if person is None or not person.is_admin:
+                    logger.info('User {} is not admin, skipping...'.format(message.sender_name))
+                    return messages.NO_PERMISSION
+        cls.broadcast_message_to_promptable_people(
+            plugin, **message_settings
+        )
         return messages.CHECK_TRIGGERED
 
     @staticmethod
-    async def get_help(message: Message) -> str:
+    async def get_help(message: Message, short: bool = False) -> str:
+        if short:
+            return messages.SHORT_HELP_MESSAGE
         with DataBaseController() as db:
             person = db.get_person(message.sender_name)
             admin_part = ''
             if person is not None and person.is_admin:
-                admin_part = messages.ADMIN_HELP_MESSAGE
+                admin_part = messages.DETAILED_ADMIN_HELP_MESSAGE
 
-        return messages.HELP_MESSAGE.format(admin_part=admin_part)
+        return messages.DETAILED_HELP_MESSAGE.format(admin_part=admin_part)
 
     @staticmethod
     async def add_user(message: Message) -> str:

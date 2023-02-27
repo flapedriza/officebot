@@ -3,6 +3,7 @@ from datetime import date
 from typing import Optional
 
 from loguru import logger
+from sqlalchemy import and_
 from sqlalchemy.exc import NoResultFound
 from sqlmodel import Session, select
 
@@ -49,8 +50,35 @@ class DataBaseController:
         statement = select(models.Person).where(models.Person.is_admin)
         return self.session.exec(statement).all()
 
-    def get_promptable_people(self) -> list[models.Person]:
+    def get_promptable_people(
+        self,
+        only_attending_today: bool = False,
+        skip_attending_today: bool = False,
+        skip_event: Optional[AssistanceEvent] = None
+    ) -> list[models.Person]:
+        if only_attending_today and skip_attending_today:
+            raise ValueError("Can't have both only_attending_today and skip_attending_today")
         statement = select(models.Person).where(models.Person.wants_prompts)
+        today = date.today()
+        if only_attending_today:
+            statement = statement.where(
+                models.Person.assistances.any(models.PersonAssistance.day == today)  # type: ignore
+            )
+        elif skip_attending_today:
+            statement = statement.where(
+                ~models.Person.assistances.any(models.PersonAssistance.day == today)  # type: ignore
+            )
+        if skip_event is not None:
+            event_to_skip = skip_event.value
+            statement = statement.where(
+                ~models.Person.assistances.any(
+                    and_(
+                        models.PersonAssistance.day == today,  # type: ignore
+                        getattr(models.PersonAssistance, event_to_skip)  # type: ignore
+                    )
+                )
+            )
+
         return self.session.exec(statement).all()
 
     #########
