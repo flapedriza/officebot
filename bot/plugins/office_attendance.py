@@ -22,8 +22,9 @@ class OfficeAttendancePlugin(Plugin):
     @listen_to(r'^Help(short)?$', re.IGNORECASE, direct_only=True)
     async def help(self, message: Message, short: Optional[str]) -> None:
         wants_short = short is not None
-        response = await self.action_controller.get_help(message, short=wants_short)
-        self.driver.create_post(message.channel_id, response)
+        responses = await self.action_controller.get_help(message, short=wants_short)
+        for response in responses:
+            self.driver.create_post(message.channel_id, response)
 
     @listen_to(r'^Add me$', re.IGNORECASE, direct_only=True)
     async def add_me(self, message: Message) -> None:

@@ -7,7 +7,7 @@ DETAILED_ADMIN_HELP_MESSAGE = """
 * **Trigger beers check**: I will ask everyone who has prompts activated if they are in for beers today
 * **Give admin to [username]**: I will give the user with that username admin privileges
 """
-DETAILED_HELP_MESSAGE = """
+DETAILED_HELP_MESSAGE_PART_1 = """
 **Those are the most important commands that you can use to interact with me. You can only use them in our private conversation:**
 * **Help**: I will show this message again
 * **Helpshort:** I will show a shorter and more straightforward version of this message
@@ -29,7 +29,8 @@ DETAILED_HELP_MESSAGE = """
 * **Who brought lunch today?**: I will show a list with the usernames of the people that brought lunch today
 * **Who eats out today?**: I will show a list with the usernames of the people that want to eat out today
 * **Who is in for beers today?**: I will show a list with the usernames of the people that are in for beers today
-
+"""
+DETAILED_HELP_MESSAGE_PART_2 = """
 **If you like to plan ahead, you can use the following commands in our private conversation to tell me what you are going to do in the future:**
 * **I will go to the office on [dd/mm/yyyy]**: I will store on the given date's record that you will go to the office, this is the same as telling me **"I am in the office today"** but for a future date
 * **I will bring lunch on [dd/mm/yyyy]**: I will store on the given date's record that you will bring lunch, this is the same as telling me **"I am bringing lunch today"** but for a future date

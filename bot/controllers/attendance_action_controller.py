@@ -120,16 +120,19 @@ class AttendanceActionController:
         return messages.CHECK_TRIGGERED
 
     @staticmethod
-    async def get_help(message: Message, short: bool = False) -> str:
+    async def get_help(message: Message, short: bool = False) -> list[str]:
         if short:
-            return messages.SHORT_HELP_MESSAGE
+            return [messages.SHORT_HELP_MESSAGE]
         with DataBaseController() as db:
             person = db.get_person(message.sender_name)
             admin_part = ''
             if person is not None and person.is_admin:
                 admin_part = messages.DETAILED_ADMIN_HELP_MESSAGE
 
-        return messages.DETAILED_HELP_MESSAGE.format(admin_part=admin_part)
+        return [
+            messages.DETAILED_HELP_MESSAGE_PART_1,
+            messages.DETAILED_HELP_MESSAGE_PART_2.format(admin_part=admin_part)
+        ]
 
     @staticmethod
     async def add_user(message: Message) -> str:
