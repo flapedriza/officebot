@@ -203,9 +203,9 @@ class AttendanceActionController:
             if person is None:
                 return messages.DONT_HAVE_USER
             if delete:
-                db.delete_person_assistance_for_date(person, day)
+                db.delete_person_attendance_for_date(person, day)
                 return messages.DELETED_OFFICE_ASSISTANCE.format(date=day)
-            db.get_or_create_person_assistance_for_date(person, day)
+            db.get_or_create_person_attendance_for_date(person, day)
 
         return messages.ADDED_OFFICE_ASSISTANCE.format(date=day)
 
@@ -216,10 +216,10 @@ class AttendanceActionController:
             person = db.get_person(username)
             if person is None:
                 return messages.DONT_HAVE_USER
-            person_assistance = db.get_person_assistance_for_date(person, day)
-            if not person_assistance:
+            person_attendance = db.get_person_attendance_for_date(person, day)
+            if not person_attendance:
                 return messages.NO_OFFICE_ASSISTANCE
-            db.set_person_assistance_event(person_assistance, event, not delete)
+            db.set_person_attendance_event(person_attendance, event, not delete)
         return messages.UPDATED_ASSISTANCE_RECORD.format(date=day)
 
     @classmethod
@@ -241,20 +241,20 @@ class AttendanceActionController:
     @staticmethod
     async def _get_list_of_people_in_office(day: date) -> str:
         with DataBaseController() as db:
-            assistants = db.get_assistants_for_date(day)
-        if not assistants:
+            attendants = db.get_attendants_for_date(day)
+        if not attendants:
             return messages.NO_ONE.format(action='is in the office', date=day)
-        people = '\n'.join([f'* {assistant.username}' for assistant in assistants])
+        people = '\n'.join([f'* {attendant.username}' for attendant in attendants])
         return messages.PEOPLE_LIST.format(action='are in the office', date=day, people=people)
 
     @staticmethod
     async def _get_list_of_people_with_event(event: AssistanceEvent, day: date) -> str:
         with DataBaseController() as db:
-            assistants = db.get_assistants_for_event(day, event)
+            attendants = db.get_attendants_for_event(day, event)
         event_pretty = event.value.replace('_', ' ')
-        if not assistants:
+        if not attendants:
             return messages.NO_ONE.format(action=event_pretty, date=day)
-        people = '\n'.join([f'* {assistant.username}' for assistant in assistants])
+        people = '\n'.join([f'* {attendant.username}' for attendant in attendants])
         if not people:
             return messages.NO_ONE.format(action=event_pretty, date=day)
         return messages.PEOPLE_LIST.format(action=event_pretty, date=day, people=people)

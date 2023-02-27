@@ -100,7 +100,7 @@ NO_OFFICE_ASSISTANCE = 'You do not have any record that indicates that you are i
 DELETED_OFFICE_ASSISTANCE = 'I deleted the record that indicated that you were in the office on {date}'
 ADDED_OFFICE_ASSISTANCE = 'I created a record that indicates that you are in the office on {date}'
 
-UPDATED_ASSISTANCE_RECORD = 'I updated your office assistance record for {date}'
+UPDATED_ASSISTANCE_RECORD = 'I updated your office attendance record for {date}'
 
 NO_ONE = 'It seems that no one {action} on {date}'
 PEOPLE_LIST = 'The following people {action} on {date}:\n{people}'

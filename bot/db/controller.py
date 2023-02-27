@@ -62,19 +62,19 @@ class DataBaseController:
         today = date.today()
         if only_attending_today:
             statement = statement.where(
-                models.Person.assistances.any(models.PersonAssistance.day == today)  # type: ignore
+                models.Person.attendances.any(models.PersonAttendance.day == today)  # type: ignore
             )
         elif skip_attending_today:
             statement = statement.where(
-                ~models.Person.assistances.any(models.PersonAssistance.day == today)  # type: ignore
+                ~models.Person.attendances.any(models.PersonAttendance.day == today)  # type: ignore
             )
         if skip_event is not None:
             event_to_skip = skip_event.value
             statement = statement.where(
-                ~models.Person.assistances.any(
+                ~models.Person.attendances.any(
                     and_(
-                        models.PersonAssistance.day == today,  # type: ignore
-                        getattr(models.PersonAssistance, event_to_skip)  # type: ignore
+                        models.PersonAttendance.day == today,  # type: ignore
+                        getattr(models.PersonAttendance, event_to_skip)  # type: ignore
                     )
                 )
             )
@@ -119,79 +119,79 @@ class DataBaseController:
         self.session.commit()
 
     ##########################################
-    #   Actions for PersonAssistance model   #
+    #   Actions for PersonAttendance model   #
     ##########################################
 
     #########
     # READ  #
     #########
-    def get_person_assistance_for_date(
+    def get_person_attendance_for_date(
         self,
         person: models.Person,
         day: date
-    ) -> Optional[models.PersonAssistance]:
-        statement = select(models.PersonAssistance).where(
-            models.PersonAssistance.person_id == person.id,
-            models.PersonAssistance.day == day,
+    ) -> Optional[models.PersonAttendance]:
+        statement = select(models.PersonAttendance).where(
+            models.PersonAttendance.person_id == person.id,
+            models.PersonAttendance.day == day,
         )
         try:
             return self.session.exec(statement).one()
         except NoResultFound:
             return None
 
-    def get_assistants_for_date(self, day: date) -> list[models.Person]:
-        statement = select(models.PersonAssistance).where(models.PersonAssistance.day == day)
-        assistants = self.session.exec(statement).all()
-        return [assistant.person for assistant in assistants]
+    def get_attendants_for_date(self, day: date) -> list[models.Person]:
+        statement = select(models.PersonAttendance).where(models.PersonAttendance.day == day)
+        attendants = self.session.exec(statement).all()
+        return [attendant.person for attendant in attendants]
 
-    def get_assistants_for_event(self, day: date, action: AssistanceEvent) -> list[models.Person]:
-        statement = select(models.PersonAssistance).where(
-            models.PersonAssistance.day == day,
-            getattr(models.PersonAssistance, action.value),
+    def get_attendants_for_event(self, day: date, action: AssistanceEvent) -> list[models.Person]:
+        statement = select(models.PersonAttendance).where(
+            models.PersonAttendance.day == day,
+            getattr(models.PersonAttendance, action.value),
         )
-        assistants = self.session.exec(statement).all()
-        return [assistant.person for assistant in assistants]
+        attendants = self.session.exec(statement).all()
+        return [attendant.person for attendant in attendants]
 
     #########
     # WRITE #
     #########
 
-    def get_or_create_person_assistance_for_date(
+    def get_or_create_person_attendance_for_date(
         self,
         person: models.Person,
         day: date
-    ) -> models.PersonAssistance:
-        person_assistance = self.get_person_assistance_for_date(person, day)
-        if person_assistance is not None:
-            return person_assistance
-        logger.info(f"Creating new person assistance for {person.username} on {day}")
-        person_assistance = models.PersonAssistance(person_id=person.id, day=day)
-        self.session.add(person_assistance)
+    ) -> models.PersonAttendance:
+        person_attendance = self.get_person_attendance_for_date(person, day)
+        if person_attendance is not None:
+            return person_attendance
+        logger.info(f"Creating new person attendance for {person.username} on {day}")
+        person_attendance = models.PersonAttendance(person_id=person.id, day=day)
+        self.session.add(person_attendance)
         self.session.commit()
-        self.session.refresh(person_assistance)
-        return person_assistance
+        self.session.refresh(person_attendance)
+        return person_attendance
 
-    def delete_person_assistance_for_date(self, person: models.Person, day: date) -> None:
-        person_assistance = self.get_person_assistance_for_date(person, day)
-        if person_assistance is None:
+    def delete_person_attendance_for_date(self, person: models.Person, day: date) -> None:
+        person_attendance = self.get_person_attendance_for_date(person, day)
+        if person_attendance is None:
             logger.info(
-                f"Can't delete person assistance for {person.username} "
+                f"Can't delete person attendance for {person.username} "
                 f"on {day} because it does not exist"
             )
             return
-        logger.info(f"Deleting person assistance for {person.username} on {day}")
-        self.session.delete(person_assistance)
+        logger.info(f"Deleting person attendance for {person.username} on {day}")
+        self.session.delete(person_attendance)
         self.session.commit()
 
-    def set_person_assistance_event(
+    def set_person_attendance_event(
         self,
-        assistance: models.PersonAssistance,
+        attendance: models.PersonAttendance,
         event: AssistanceEvent,
         value: bool
     ) -> None:
         logger.info(
-            f"Setting {event} for {assistance.person.username} on {assistance.day} to {value}"
+            f"Setting {event} for {attendance.person.username} on {attendance.day} to {value}"
         )
-        setattr(assistance, event.value, value)
-        self.session.add(assistance)
+        setattr(attendance, event.value, value)
+        self.session.add(attendance)
         self.session.commit()
