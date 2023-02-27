@@ -9,17 +9,17 @@ fi
 
 if [ "$#" -eq 2 ]; then
   if [ "$1" = "--dev" ]; then
-    docker run --rm -it --network host --name officebot -v "$(pwd)/data:/data" -v "$(pwd)/bot:/code" officebot "$2"
+    docker run --rm --env-file .env -it --network host --name officebot -v "$(pwd)/data:/data" -v "$(pwd)/bot:/code" officebot "$2"
   else
     echo "Usage: $0 [--dev] [command]"
     exit 1
   fi
 elif [ "$#" -eq 1 ]; then
   if [ "$1" = "--dev" ]; then
-    docker run --rm --network host --name officebot -v "$(pwd)/data:/data" -v "$(pwd)/bot:/code" officebot
+    docker run --rm --env-file .env --network host --name officebot -v "$(pwd)/data:/data" -v "$(pwd)/bot:/code" officebot
   else
-    docker run -it --rm --name officebot -v "$(pwd)/data:/data" officebot "$1"
+    docker run -it --env-file .env --rm --name officebot -v "$(pwd)/data:/data" officebot "$1"
   fi
 else
-  docker run --rm --name officebot -v "$(pwd)/data:/data" officebot
+  docker run --rm --env-file .env --name officebot -v "$(pwd)/data:/data" officebot
 fi

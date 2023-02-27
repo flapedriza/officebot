@@ -5,15 +5,15 @@ Mattermost bot that allows the team to track who is in the office, what people d
 To see the list of commands, check the [commands documentation](docs/commands.md).
 
 ## Configuration
-Before running the bot for the first time, you need to set at least the following variables in the `config.pyp` file located inside the
-`bot` folder:
+Before running the bot for the first time, copy the contents of the `.env-dist` file to a file called `.env`
+in the root of the project and fill in the following values.
 * `MATTERMOST_URL`: The URL of the Mattermost server.
 * `MATTERMOST_PORT`: The port where the Mattermost server is running.
 * `BOT_TEAM`: The name of the Mattermost team where the bot belongs.
-* `MATTERMOST_API_PATH`: The path of the Mattermost API.
+* `MATTERMOST_API_PATH`: The path of the Mattermost API. (you can remove this one if the api path is the default)
 * `BOT_TOKEN`: The token of the bot user.
 
-You can change the other settings to your preference.
+You can change the other settings to your preference in the `config.py` file located in the `bot` folder.
 
 ## Build
 In order to build the bot docker image, just run the `build.sh` script.
