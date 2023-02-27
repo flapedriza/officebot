@@ -19,9 +19,10 @@ class OfficeAttendancePlugin(Plugin):
     def on_stop(self) -> None:
         self.action_controller.on_stop(self)
 
-    @listen_to(r'^Help$', re.IGNORECASE, direct_only=True)
-    async def help(self, message: Message) -> None:
-        response = await self.action_controller.get_help(message)
+    @listen_to(r'^Help(short)?$', re.IGNORECASE, direct_only=True)
+    async def help(self, message: Message, short: Optional[str]) -> None:
+        wants_short = short is not None
+        response = await self.action_controller.get_help(message, short=wants_short)
         self.driver.create_post(message.channel_id, response)
 
     @listen_to(r'^Add me$', re.IGNORECASE, direct_only=True)
@@ -41,7 +42,7 @@ class OfficeAttendancePlugin(Plugin):
 
     @listen_to(r'^Trigger ([a-z]+) check$', re.IGNORECASE, direct_only=True)
     async def trigger_check(self, message: Message, check_type: str) -> None:
-        response = await self.action_controller.trigger_check(self, message, check_type)
+        response = self.action_controller.trigger_check(self, message, check_type)
         self.driver.create_post(message.channel_id, response)
 
     @listen_to(r'^Prompt me$', re.IGNORECASE, direct_only=True)
