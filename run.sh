@@ -21,5 +21,5 @@ elif [ "$#" -eq 1 ]; then
     docker run -it --env-file .env --rm --name officebot -v "$(pwd)/data:/data" officebot "$1"
   fi
 else
-  docker run --rm --env-file .env --name officebot -v "$(pwd)/data:/data" officebot
+  docker run --rm -d --env-file .env --name officebot -v "$(pwd)/data:/data" officebot
 fi
