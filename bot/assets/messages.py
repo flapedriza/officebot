@@ -41,7 +41,7 @@ DETAILED_HELP_MESSAGE_PART_2 = """
 * **I will not eat out on [dd/mm/yyyy]**: I will remove the indication that you will want to eat out from the record of the given date, this is the same as telling me **"I am not eating out today"** but for a future date
 * **I will not be in for beers on [dd/mm/yyyy]**: I will remove the indication that you will be in for beers from the record of the given date, this is the same as telling me **"I am not in for beers today"** but for a future date
 
-**With those commands you can also ask me what is going to happen in the office in the future, you can use them both in our private conversation and in the office channel:
+**With those commands you can also ask me what is going to happen in the office in the future, you can use them both in our private conversation and in the office channel**:
 * **Who will be in the office on [dd/mm/yyyy]?**: I will show a list with the usernames of the people that will be in the office on the given date
 * **Who will bring lunch on [dd/mm/yyyy]?**: I will show a list with the usernames of the people that will bring lunch on the given date
 * **Who will eat out on [dd/mm/yyyy]?**: I will show a list with the usernames of the people that will want to eat out on the given date
