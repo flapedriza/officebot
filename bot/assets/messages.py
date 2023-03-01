@@ -32,6 +32,14 @@ DETAILED_HELP_MESSAGE_PART_1 = """
 """
 DETAILED_HELP_MESSAGE_PART_2 = """
 **If you like to plan ahead, you can use the following commands in our private conversation to tell me what you are going to do in the future:**
+* **I will go to the office tomorrow**: I will store on the given date's record that you will go to the office, this is the same as telling me **"I am in the office today"** but for a future date
+* **I will bring lunch tomorrow**: I will store on the given date's record that you will bring lunch, this is the same as telling me **"I am bringing lunch today"** but for a future date
+* **I will eat out tomorrow**: I will store on the given date's record that you will want to eat out, this is the same as telling me **"I am eating out today"** but for a future date
+* **I will be in for beers tomorrow**: I will store on the given date's record that you will be in for beers, this is the same as telling me **"I am in for beers today"** but for a future date
+* **I will not go to the office tomorrow**: I will remove the indication that you will go to the office from the record of the given date, this is the same as telling me **"I am not in the office today"** but for a future date
+* **I will not bring lunch tomorrow**: I will remove the indication that you will bring lunch from the record of the given date, this is the same as telling me **"I am not bringing lunch today"** but for a future date
+* **I will not eat out tomorrow**: I will remove the indication that you will want to eat out from the record of the given date, this is the same as telling me **"I am not eating out today"** but for a future date
+* **I will not be in for beers tomorrow**: I will remove the indication that you will be in for beers from the record of the given date, this is the same as telling me **"I am not in for beers today"** but for a future date
 * **I will go to the office on [dd/mm/yyyy]**: I will store on the given date's record that you will go to the office, this is the same as telling me **"I am in the office today"** but for a future date
 * **I will bring lunch on [dd/mm/yyyy]**: I will store on the given date's record that you will bring lunch, this is the same as telling me **"I am bringing lunch today"** but for a future date
 * **I will eat out on [dd/mm/yyyy]**: I will store on the given date's record that you will want to eat out, this is the same as telling me **"I am eating out today"** but for a future date
@@ -72,6 +80,11 @@ SHORT_HELP_MESSAGE = """
 * **Who brought lunch today?**
 * **Who eats out today?**
 * **Who is in for beers today?**
+
+**Or similarly for tomorrow:**
+* **I will go to the office tomorrow**
+* **Who will be in for beers tomorrow?**
+* ...
 
 **If you want to know more, just say "Help"**
 """
