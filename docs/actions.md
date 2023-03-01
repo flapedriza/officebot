@@ -22,6 +22,15 @@
     * bring lunch: Set the given date's PersonAttendance brought_lunch to true
     * eat out: Set the given date's PersonAttendance lunch_outside to true
     * be in for beers: Set the given date's PersonAttendance in_for_beers to true
+  * `^I will (not )?([a-z ]+) tomorrow$`
+    * not go to the office: Delete the PersonAttendance for the given date
+    * not bring lunch: Set the given date's PersonAttendance brought_lunch to false
+    * not eat out: Set the given date's PersonAttendance lunch_outside to false
+    * not be in for beers: Set the given date's PersonAttendance in_for_beers to false
+    * go to the office: Create a PersonAttendance for the given date
+    * bring lunch: Set the given date's PersonAttendance brought_lunch to true
+    * eat out: Set the given date's PersonAttendance lunch_outside to true
+    * be in for beers: Set the given date's PersonAttendance in_for_beers to true
 
 * In private conversation (only for admins):
   * `^Delete ([a-z]+)$`: Delete Person from database
@@ -37,6 +46,11 @@
     * eats out: Show the usernames of today's PersonAssistances Persons with lunch_outside true
     * is in for beers: Show the usernames of today's PersonAssistances Persons with in_for_beers true
   * `^Who will ([a-z ]+) on ([0-9]{2}\/[0-9]{2}\/[0-9]{4})$`
+    * be in the office: Show the usernames of the given date's PersonAssistances Persons
+    * bring lunch: Show the usernames of the given date's PersonAssistances Persons with brought_lunch true
+    * eat out: Show the usernames of the given date's PersonAssistances Persons with lunch_outside true
+    * be in for beers: Show the usernames of the given date's PersonAssistances Persons with in_for_beers true
+  * `^Who will ([a-z ]+) on tomorrow$`
     * be in the office: Show the usernames of the given date's PersonAssistances Persons
     * bring lunch: Show the usernames of the given date's PersonAssistances Persons with brought_lunch true
     * eat out: Show the usernames of the given date's PersonAssistances Persons with lunch_outside true
