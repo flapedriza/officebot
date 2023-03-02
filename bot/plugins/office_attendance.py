@@ -51,18 +51,18 @@ class OfficeAttendancePlugin(Plugin):
         response = await self.action_controller.prompt_user(message, True)
         self.driver.create_post(message.channel_id, response)
 
-    @listen_to(r'^Do not prompt me$', re.IGNORECASE, direct_only=True)
+    @listen_to(r"^Do(n'| no)t prompt me$", re.IGNORECASE, direct_only=True)
     async def do_not_prompt_me(self, message: Message) -> None:
         response = await self.action_controller.prompt_user(message, False)
         self.driver.create_post(message.channel_id, response)
 
-    @listen_to(r'^I am (not )?([a-z ]+) today$', re.IGNORECASE, direct_only=True)
+    @listen_to(r"^I('| a)m (not )?([a-z ]+) today$", re.IGNORECASE, direct_only=True)
     async def today_action(self, message: Message, not_match: Optional[str], action: str) -> None:
         delete = not_match is not None
         response = await self.action_controller.perform_date_action(message, delete, action)
         self.driver.create_post(message.channel_id, response)
 
-    @listen_to(r'^I will (not )?([a-z ]+) on ([0-9]{2}\/[0-9]{2}\/[0-9]{4})$', re.IGNORECASE, direct_only=True)
+    @listen_to(r"^I('| wi)ll (not )?([a-z ]+) on ([0-9]{2}\/[0-9]{2}\/[0-9]{4})$", re.IGNORECASE, direct_only=True)
     async def future_action(self, message: Message, not_match: Optional[str], action: str, action_date: str) -> None:
         delete = not_match is not None
         action_conversion = {
@@ -82,7 +82,7 @@ class OfficeAttendancePlugin(Plugin):
         self.driver.create_post(message.channel_id, response)
 
     @listen_to(
-        r'^Who will ([a-z ]+) on ([0-9]{2}\/[0-9]{2}\/[0-9]{4})\??$',
+        r"^Who('| wi)ll ([a-z ]+) on ([0-9]{2}\/[0-9]{2}\/[0-9]{4})\??$",
         re.IGNORECASE,
         needs_mention=True
     )
