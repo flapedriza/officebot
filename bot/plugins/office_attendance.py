@@ -62,6 +62,13 @@ class OfficeAttendancePlugin(Plugin):
         response = await self.action_controller.perform_date_action(message, delete, action)
         self.driver.create_post(message.channel_id, response)
 
+    @listen_to(r"^I('| wi)ll (not )?([a-z ]+) tomorrow", re.IGNORECASE, direct_only=True)
+    async def tomorrow_action(self, message: Message, not_match: Optional[str], action: str) -> None:
+        delete = not_match is not None
+        action_date = datetime.today().replace(day=datetime.today().day + 1).date()
+        response = await self.action_controller.perform_date_action(message, delete, action, action_date)
+        self.driver.create_post(message.channel_id, response)
+
     @listen_to(r'^I will (not )?([a-z ]+) on ([0-9]{2}\/[0-9]{2}\/[0-9]{4})$', re.IGNORECASE, direct_only=True)
     async def future_action(self, message: Message, not_match: Optional[str], action: str, action_date: str) -> None:
         delete = not_match is not None
